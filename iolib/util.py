@@ -6,15 +6,15 @@ import os
 import platform
 import subprocess
 import hashlib
-from psutil import virtual_memory
+import psutil
 
 
-class IOUtils(object):
+class IOUtils:
     
     @staticmethod
     def use_chunks(size):
-        mem = virtual_memory()
-        return true if mem.total//4 >= size else False
+        mem = psutil.virtual_memory()
+        return True if mem.total//4 >= size else False
 
     @staticmethod
     def hide_file(path):
@@ -35,36 +35,37 @@ class IOUtils(object):
         return result
 
     @staticmethod
-    def read_chunk(chunk_size, source):
+    def read_chunk(chunk_size, file_descr):
         while True:
-            data = source.read(chunk_size)
+            data = file_descr.read(chunk_size)
             if not data:
                 break
             yield data
 
     @staticmethod
-    def __stream_hash__(hashing_algo:str, source):
+    def write_chunk(chunks, file_desc):
+            for data in chunks:
+                file_desc.write(data)
+
+    @staticmethod
+    def __stream_hash__(hashing_algo:str, stream):
         """!!!Please note that this function is not to be used directly!!!
 
         This function is used internally by other methods in this class however if you still want to use it directly documentation can be found bellow
         Keyword arguments:
 
         hashing_algo -- algorithm to use we recommend using the hashlib.algorithms_available attribute to choose an algorithm (default none)
-        source -- a binary stream with read capabilities
+        stream -- a binary stream with read capabilities
         """
 
         try:
             ha:hash = hashlib.new(hashing_algo)
         except ValueError as e:
             raise ValueError(f'Error inappropriate hashing algorithm make sure you are not using the function directly, [{e}]')
-        for data in IOUtils.read_chunk(ha.block_size, source):
+        
+        for data in IOUtils.read_chunk(ha.block_size, stream):
             ha.update(data)
         return ha.digest()
-
-    @staticmethod
-    def create_noise_file(fname, size):
-        with open(fname, 'wb+') as f:
-
 
     @staticmethod
     def file_md5_hash(path):
@@ -78,7 +79,19 @@ class IOUtils(object):
             return h.hex()
         except IOError as e:
             raise IOError(f'Could not open the file for hashing [{e}]')
+    
+    @staticmethod
+    def file_sha256_hash(path):
+        """
+       Use this function for most cases as for file hashing SHA256 is the reccomended nowadays
+        """
+        try:
+            with open(path, 'rb') as f:
+                h = IOUtils.__stream_hash__('sha256', f)
+            return h.hex()
+        except IOError as e:
+            raise IOError(f'Could not open the file for hashing [{e}]')
 
 
 if __name__ == '__main__':
-    raise EnvironmentError('this file is a module and should not be ran directly')
+    raise RuntimeError('this file is a module and should not be ran directly')

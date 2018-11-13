@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ioutils_compuraven",
+    name="iolib_compuraven",
     version="1.0.0.post1",
     author="Computer Raven",
     author_email="oss@compuraven.com",

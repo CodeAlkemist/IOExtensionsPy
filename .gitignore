@@ -4,3 +4,5 @@ build
 dist
 ioutils.egg-info
 ioutils_compuraven.egg-info
+.idea
+*/__pycache__
