@@ -1,3 +1,5 @@
+from typing import Any, Tuple, TextIO
+
 import iolib.util
 import os
 import platform
@@ -9,7 +11,16 @@ class File:
     This class describes a file with usefull information like permissions size and other features
     like the ability to easilly hide a file OS independently (for the most common OS's).
     """
-    def __init__(self, path: str, open_stream: bool=False, mode: str='rb', cache_hash: bool = True):
+    lock: bool
+    size: float
+    __stream__: TextIO
+    __file_path__: str
+    __mode__: str
+    has_open_stream: bool
+    
+    hash: Tuple[bytes, str]
+
+    def __init__(self, path: str, open_stream: bool=False, mode: str='rb', cache_hash: bool = True, lock: bool = True):
         """ Constructor of the File class
         :arg path -- the path to create a File instance with
         :arg open_stream -- Shall a stream be opened?
@@ -21,23 +32,22 @@ class File:
         self.__stream__ = None
         self.__mode__ = mode
         self.has_open_stream = False
+        self.lock = lock
         self.size = os.path.getsize(self.__file_path__)
         self.modate = os.path.getmtime(self.__file_path__)
         self.createdate = self.creation_date()
         self.human_modate = datetime.datetime.fromtimestamp(self.modate).isoformat()
-
+        """Hash is a tuple with the bytes object on 0 and the hex string on 1"""
+        self.hash = None
         if open_stream:
             try:
                 self.__stream__ = open(self.__file_path__, self.__mode__)
             except IOError as e:
-                raise EnvironmentError(f'An IO exception has occured [{e}]')
+                raise EnvironmentError(f'An IO exception has occurred [{e}]')
             else:
                 self.has_open_stream = True
-
         if cache_hash and open_stream:
             self.hash = self.get_hash()
-        else:
-            self.hash = None
 
     def __enter__(self): return self
 

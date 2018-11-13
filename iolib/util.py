@@ -30,9 +30,7 @@ class Utils:
 
     @staticmethod
     def split_path(path):
-        head, tail = ntpath.split(path)
-        result = (head, tail)
-        return result
+        return ntpath.split(path)
 
     @staticmethod
     def read_chunk(chunk_size, file_descr):
@@ -82,7 +80,7 @@ class Utils:
         Use this function for most cases as for file hashing SHA256 is the recommended nowadays
         """
         h = Utils.__stream_hash__('sha256', stream)
-        return h.hex()
+        return h, h.hex()
 
 
 if __name__ == '__main__':
