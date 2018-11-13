@@ -9,7 +9,7 @@ import hashlib
 import psutil
 
 
-class IOUtils:
+class Utils:
     
     @staticmethod
     def use_chunks(size):
@@ -25,7 +25,7 @@ class IOUtils:
         if platform.system() == 'Windows':
             subprocess.check_call(["attrib","+H",path])
         else:
-            path_parts = IOUtils.split_path(path)
+            path_parts = Utils.split_path(path)
             os.rename(path_parts[1], f'.{path_parts[1]}')
 
     @staticmethod
@@ -59,38 +59,30 @@ class IOUtils:
         """
 
         try:
-            ha:hash = hashlib.new(hashing_algo)
+            ha: hash = hashlib.new(hashing_algo)
         except ValueError as e:
             raise ValueError(f'Error inappropriate hashing algorithm make sure you are not using the function directly, [{e}]')
         
-        for data in IOUtils.read_chunk(ha.block_size, stream):
+        for data in Utils.read_chunk(ha.block_size, stream):
             ha.update(data)
         return ha.digest()
 
     @staticmethod
-    def file_md5_hash(path):
+    def stream_md5_hash(stream):
         """
         Deprecated:
         This function is here for compatibility purposes only as MD5 shall be avoided if possible
         """
-        try:
-            with open(path, 'rb') as f:
-                h = IOUtils.__stream_hash__('md5', f)
-            return h.hex()
-        except IOError as e:
-            raise IOError(f'Could not open the file for hashing [{e}]')
+        h = Utils.__stream_hash__('md5', stream)
+        return h.hex()
     
     @staticmethod
-    def file_sha256_hash(path):
+    def stream_sha256_hash(stream):
         """
-       Use this function for most cases as for file hashing SHA256 is the reccomended nowadays
+        Use this function for most cases as for file hashing SHA256 is the recommended nowadays
         """
-        try:
-            with open(path, 'rb') as f:
-                h = IOUtils.__stream_hash__('sha256', f)
-            return h.hex()
-        except IOError as e:
-            raise IOError(f'Could not open the file for hashing [{e}]')
+        h = Utils.__stream_hash__('sha256', stream)
+        return h.hex()
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ class File:
     This class describes a file with usefull information like permissions size and other features
     like the ability to easilly hide a file OS independently (for the most common OS's).
     """
-    def __init__(self, path: str, open_stream: bool=False, mode: str='r'):
+    def __init__(self, path: str, open_stream: bool=False, mode: str='rb', cache_hash: bool = True):
         """ Constructor of the File class
         :arg path -- the path to create a File instance with
         :arg open_stream -- Shall a stream be opened?
@@ -26,13 +26,6 @@ class File:
         self.createdate = self.creation_date()
         self.human_modate = datetime.datetime.fromtimestamp(self.modate).isoformat()
 
-        try:
-            pass
-        except os.error as e:
-            raise IOError(f'File {path} not found')
-        else:
-            pass
-
         if open_stream:
             try:
                 self.__stream__ = open(self.__file_path__, self.__mode__)
@@ -40,7 +33,19 @@ class File:
                 raise EnvironmentError(f'An IO exception has occured [{e}]')
             else:
                 self.has_open_stream = True
-        
+
+        if cache_hash and open_stream:
+            self.hash = self.get_hash()
+        else:
+            self.hash = None
+
+    def __enter__(self): return self
+
+    def __exit__(self, type, value, traceback):
+        if self.has_open_stream:
+            self.__stream__.close()
+            self.has_open_stream = False
+
     def change_mode(self, mode):
         if self.has_open_stream:
             self.__stream__.close()
@@ -64,12 +69,11 @@ class File:
                 # so we'll settle for when its content was last modified.
                 return stat.st_mtime
 
-    def copy(self):
-        """
-        :argument
-
-        :return:
-        """
+    def get_hash(self):
+        if self.has_open_stream:
+            return iolib.util.Utils.stream_sha256_hash(self.__stream__)
+        else:
+            raise EnvironmentError('No open stream to retrieve data from')
 
 
 if __name__ == "__main__":
