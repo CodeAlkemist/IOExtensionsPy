@@ -1,4 +1,4 @@
-__name__ = 'corbeau'
+__name__ = 'swan'
 __all__ = ["io", "util"]
 
 # Import the minimal most common usage

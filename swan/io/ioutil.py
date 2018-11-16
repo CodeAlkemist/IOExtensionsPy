@@ -6,7 +6,7 @@ import os
 import platform
 import subprocess
 import psutil
-import corbeau.util
+import swan.util
 import io
 
 
@@ -36,13 +36,13 @@ def write_chunk(chunks, file_desc):
             file_desc.write(data)
 
 
-@corbeau.util.deprecated('This function is here for compatibility purposes only as MD5 shall be avoided if possible')
+@swan.util.deprecated('This function is here for compatibility purposes only as MD5 shall be avoided if possible')
 def stream_md5_hash(stream: io.BytesIO):
     """
     Deprecated:
     This function is here for compatibility purposes only as MD5 shall be avoided if possible
     """
-    h = corbeau.util.__stream_hash__('md5', stream)
+    h = swan.util.__stream_hash__('md5', stream)
     return h.hex()
 
 
@@ -50,7 +50,7 @@ def stream_sha256_hash(stream: io.BytesIO):
     """
     Use this function for most cases as for file hashing SHA256 is the recommended nowadays
     """
-    h = corbeau.util.__stream_hash__('sha256', stream)
+    h = swan.util.__stream_hash__('sha256', stream)
     return h, h.hex()
 
 

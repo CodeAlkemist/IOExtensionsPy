@@ -1,3 +1,3 @@
-# IOUtils
+# Swan-py
 
-this project is a collection of utilities to aid with io mainly files at the moment but plans are set to make it useful in other areas too.
+this project is aimed at making the development of projects faster by providing function we all use

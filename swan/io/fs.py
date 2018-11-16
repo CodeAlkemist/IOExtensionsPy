@@ -1,7 +1,7 @@
 from typing import Any, Tuple, TextIO
 
-import corbeau.io.ioutil
-import corbeau.util
+import swan.io.ioutil
+import swan.util
 import os
 import platform
 import datetime
@@ -82,7 +82,7 @@ class File:
 
     def get_hash(self):
         if self.has_open_stream:
-            return corbeau.ioutil.stream_sha256_hash(self.__stream__)
+            return swan.ioutil.stream_sha256_hash(self.__stream__)
         else:
             raise EnvironmentError('No open stream to retrieve data from')
 
