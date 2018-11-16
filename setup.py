@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="iolib_compuraven",
-    version="1.0.0.post1",
+    name="corbeau",
+    version="1.0.0",
     author="Computer Raven",
     author_email="oss@compuraven.com",
-    description="A package containing io utilities",
+    description="A package containing utilities to speed up development",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/CodeAlkemist/IOExtensionsPy/tree/master",
+    url="https://github.com/CodeAlkemist/corbeau/tree/master",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

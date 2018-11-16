@@ -1,26 +1,42 @@
-import iolib
-from unittest import TestCase, mock
+import corbeau
+from unittest import TestCase
 import unittest
-from io import BytesIO
+import io
+import random
+import warnings
 
 
 class FSTest(TestCase):
-    @mock.patch('iolib.fs.open')
-    def test_file_hashing(self):
-        with mock.patch('iolib.fs.open') as mock_open:
-            mock_open.return_value.__enter__.return_value = BytesIO().write('Hello There general you know who'.encode('utf-8'))
-            f1 = iolib.fs.File('aaa', True)
-            f2 = iolib.fs.File('bbb', True)
-            self.assertEqual(f1.hash[0], f2.hash[0], 'hash of different files, pass')
+    def test_stream_hashing(self):
+        streams = (
+            io.BytesIO(),
+            io.BytesIO()
+        )
+        for stream in streams:
+            stream.write(bytes(f'Hello There general you know who{random.randint(1, 1000)}'.encode('utf-8')))
+            stream.getbuffer()
+            stream.seek(0)
+
+        self.assertNotEqual(corbeau.ioutil.stream_sha256_hash(streams[0]),
+                            corbeau.ioutil.stream_sha256_hash(streams[1]), )
+
+    def test_md5_deprecation(self):
+        stream = io.BytesIO()
+        stream.write(b'Test of MD5 deprecation')
+        stream.seek(0)
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            corbeau.ioutil.stream_md5_hash(stream)  # Should throw a deprecation warning
+            self.assertGreaterEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
 
     def test_file_not_found(self):
         with self.assertRaises(IOError):
-            reqs = iolib.fs.File('requirements_testing_dummy.tx', True, 'File not found exception handling, not pass')
-        # print('File not found exception handling, pass')
+            reqs = corbeau.fs.File('requirements_testing_dummy.tx', True)
 
     def test_split_path(self):
-        self.assertEqual(iolib.util.Utils.split_path('/a/b/c/.d.a'), ('/a/b/c', '.d.a'), 'split_path , not pass')
-        # print('split_path , pass')
+        self.assertEqual(corbeau.ioutil.split_path('/a/b/c/.d.a'), ('/a/b/c', '.d.a'))
 
 
 if __name__ == '__main__':
